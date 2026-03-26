@@ -10,8 +10,8 @@ metadata:
 spec:
     cmk: {{ .Values.cmk | toYaml | nindent 8 }}
     commonTags:
-        EnvironmentId: {{ .Values.environmentId }}
-        ProjectId: {{ .Values.projectId }}
+        environment_id: {{ .Values.environmentId }}
+        project_id: {{ .Values.projectId }}
     database: {{ .Values.database | toYaml | nindent 8 }}
     environmentId: {{ .Values.environmentId }}
     forceDestroy: {{ .Values.forceDestroy }}
