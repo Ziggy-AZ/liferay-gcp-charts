@@ -76,8 +76,6 @@ spec:
                     serviceAccountName: provider-gcp-compute
     serviceAccountTemplate:
         metadata:
-            annotations:
-                iam.gke.io/gcp-service-account: {{ printf "%s-cp-iam@%s.iam.gserviceaccount.com" .Values.deploymentName .Values.gcp.projectId }}
             name: provider-gcp-compute
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -117,9 +115,46 @@ spec:
                     serviceAccountName: upbound-provider-family-gcp
     serviceAccountTemplate:
         metadata:
-            annotations:
-                iam.gke.io/gcp-service-account: {{ printf "%s-cp-iam@%s.iam.gserviceaccount.com" .Values.deploymentName .Values.gcp.projectId }}
             name: upbound-provider-family-gcp
+---
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+    annotations:
+        argocd.argoproj.io/sync-wave: "-90"
+    name: gcp-kms-config
+spec:
+    deploymentTemplate:
+        spec:
+            selector:
+                matchLabels:
+                    pkg.crossplane.io/provider: provider-gcp-kms
+            template:
+                metadata:
+                    annotations:
+                        instrumentation.opentelemetry.io/inject-dotnet: "false"
+                        instrumentation.opentelemetry.io/inject-java: "false"
+                        instrumentation.opentelemetry.io/inject-nodejs: "false"
+                        instrumentation.opentelemetry.io/inject-python: "false"
+                        sidecar.opentelemetry.io/inject: "false"
+                    labels:
+                        pkg.crossplane.io/provider: provider-gcp-kms
+                spec:
+                    containers:
+                        -   name: package-runtime
+                            resources:
+                                limits:
+                                    cpu: 1000m
+                                    memory: 2Gi
+                                requests:
+                                    cpu: 250m
+                                    memory: 512Mi
+                            {{- include "crossplane-runtime-configs.containerSecurityContext" . | nindent 28 }}
+                    {{- include "crossplane-runtime-configs.podSecurityContext" . | nindent 20 }}
+                    serviceAccountName: provider-gcp-kms
+    serviceAccountTemplate:
+        metadata:
+            name: provider-gcp-kms
 ---
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
@@ -158,8 +193,6 @@ spec:
                     serviceAccountName: provider-gcp-sql
     serviceAccountTemplate:
         metadata:
-            annotations:
-                iam.gke.io/gcp-service-account: {{ printf "%s-cp-iam@%s.iam.gserviceaccount.com" .Values.deploymentName .Values.gcp.projectId }}
             name: provider-gcp-sql
 ---
 apiVersion: pkg.crossplane.io/v1beta1
@@ -199,8 +232,6 @@ spec:
                     serviceAccountName: provider-gcp-storage
     serviceAccountTemplate:
         metadata:
-            annotations:
-                iam.gke.io/gcp-service-account: {{ printf "%s-cp-iam@%s.iam.gserviceaccount.com" .Values.deploymentName .Values.gcp.projectId }}
             name: provider-gcp-storage
 ---
 apiVersion: pkg.crossplane.io/v1beta1
