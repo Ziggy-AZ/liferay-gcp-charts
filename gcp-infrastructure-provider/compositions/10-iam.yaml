@@ -7,6 +7,8 @@ metadata:
         {{- $labels | toYaml | nindent 8 }}
     name: {{ $gsaName }}
 spec:
+    forProvider:
+        displayName: "Liferay {{ $gsaName }} Service Account"
 ---
 apiVersion: cloudplatform.gcp.m.upbound.io/v1beta1
 kind: ServiceAccountIAMMember
