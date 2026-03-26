@@ -6,9 +6,6 @@ metadata:
     labels:
         {{- $labels | toYaml | nindent 8 }}
     name: {{ $gsaName }}
-spec:
-    forProvider:
-        accountId: {{ $gsaName }}
 ---
 apiVersion: cloudplatform.gcp.m.upbound.io/v1beta1
 kind: ServiceAccountIAMMember
@@ -19,7 +16,7 @@ metadata:
         {{- $labels | toYaml | nindent 8 }}
 spec:
     forProvider:
-        member: serviceAccount:{{ $env.projectId }}.svc.id.goog[{{ $namespace }}/liferay-default]
+        member: "serviceAccount:{{ $env.projectId }}.svc.id.goog[{{ $namespace }}/liferay-default]"
         role: roles/iam.workloadIdentityUser
         serviceAccountIdRef:
             name: {{ $gsaName }}
@@ -33,7 +30,7 @@ metadata:
         {{- $labels | toYaml | nindent 8 }}
 spec:
     forProvider:
-        member: serviceAccount:{{ $gsaEmail }}
+        member: "serviceAccount:{{ $gsaEmail }}"
         project: {{ $env.projectId }}
         role: roles/cloudsql.instanceUser
 ---
@@ -46,6 +43,6 @@ metadata:
         {{- $labels | toYaml | nindent 8 }}
 spec:
     forProvider:
-        member: serviceAccount:{{ $gsaEmail }}
+        member: "serviceAccount:{{ $gsaEmail }}"
         project: {{ $env.projectId }}
         role: roles/cloudsql.client

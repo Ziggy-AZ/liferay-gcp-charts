@@ -39,17 +39,17 @@ spec:
             key: password
             name: {{ $databaseName }}-root-password-secret
         settings:
-            dataDiskSizeGb: {{ $databaseSpec.storageGB | default 10 }}
-            dataDiskType: PD_SSD
             databaseFlags:
                 -   name: cloudsql.iam_authentication
                     value: "on"
+            diskSize: {{ $databaseSpec.storageGB | default 10 }}
+            diskType: PD_SSD
             edition: ENTERPRISE
             insightsConfig:
                 queryInsightsEnabled: {{ $databaseSpec.queryInsightsEnabled | default true }}
             ipConfiguration:
                 ipv4Enabled: false
-                privateNetwork: projects/{{ $env.projectId }}/global/networks/{{ $env.vpcName }}
+                privateNetwork: "projects/{{ $env.projectId }}/global/networks/{{ $env.vpcName }}"
                 sslMode: TRUSTED_CLIENT_CERTIFICATE_REQUIRED
             tier: {{ $databaseSpec.instanceType | default "db-custom-1-3840" }}
             userLabels:
@@ -69,8 +69,8 @@ spec:
     forProvider:
         charset: UTF8
         collation: en_US.UTF8
-        instanceRef:
-            name: {{ $databaseInstanceName }}
+        instanceSelector:
+            matchControllerRef: true
     managementPolicies: {{ $managementPolicies }}
 ---
 apiVersion: sql.gcp.m.upbound.io/v1beta1
@@ -84,8 +84,8 @@ metadata:
     name: {{ $xr.metadata.name }}-db-user
 spec:
     forProvider:
-        instanceRef:
-            name: {{ $databaseInstanceName }}
+        instanceSelector:
+            matchControllerRef: true
         type: CLOUD_IAM_SERVICE_ACCOUNT
     managementPolicies: {{ $managementPolicies }}
 ---
@@ -95,6 +95,7 @@ metadata:
     annotations:
         gotemplating.fn.crossplane.io/composition-resource-name: usage-instance-by-database
     name: {{ $xr.metadata.name }}-instance-by-database
+    namespace: {{ $namespace }}
 spec:
     by:
         apiVersion: sql.gcp.m.upbound.io/v1beta1
@@ -113,6 +114,7 @@ metadata:
     annotations:
         gotemplating.fn.crossplane.io/composition-resource-name: usage-instance-by-user
     name: {{ $xr.metadata.name }}-instance-by-user
+    namespace: {{ $namespace }}
 spec:
     by:
         apiVersion: sql.gcp.m.upbound.io/v1beta1
