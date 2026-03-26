@@ -26,9 +26,9 @@
 {{- $managementPoliciesNoUpdate := $xr.spec.orphanOnDelete | ternary (list "Create" "Observe") (list "Create" "Delete" "Observe") | toJson -}}
 {{- $projectIdFull := printf "%s-%s" $projectId $environmentId -}}
 {{- $region := $databaseSpec.region | default "us-central1" -}}
-
-{{- $cmkKeyName := printf "projects/%s/locations/%s/keyRings/%s-keyring/cryptoKeys/%s-key" $env.projectId $region $baseName $baseName -}}
-{{- $instanceConnectionName := printf "%s:%s:%s" $env.projectId $region $databaseInstanceName -}}
 {{- $uidHash := printf "%s-%s" $env.projectNumber $projectIdFull | sha256sum | trunc 6 -}}
 
 {{- $baseName := printf "%.18s-%s" $projectIdFull $uidHash -}}
+
+{{- $cmkKeyName := printf "projects/%s/locations/%s/keyRings/%s-keyring/cryptoKeys/%s-key" $env.projectId $region $baseName $baseName -}}
+{{- $instanceConnectionName := printf "%s:%s:%s" $env.projectId $region $databaseInstanceName -}}
