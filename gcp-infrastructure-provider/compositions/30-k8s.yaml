@@ -154,9 +154,6 @@ spec:
                 DATABASE_INSTANCE_NAME: {{ $instanceConnectionName }}
                 DATABASE_PORT: {{ $databasePort | default 5432 | quote }}
                 DATABASE_USERNAME: {{ $databaseIamUser | toString }}
-                ELASTICSEARCH_HOST: es-es-http
-                ELASTICSEARCH_PORT: "9200"
-                ELASTICSEARCH_URL: http://es-es-http:9200
                 LIFERAY_GCS_BUCKET_NAME: {{ $baseName }}-dl
                 LIFERAY_OVERLAY_BUCKET_NAME: {{ $baseName }}-overlay
             type: Opaque

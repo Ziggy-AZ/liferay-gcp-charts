@@ -37,6 +37,8 @@ liferay-default:
             -   configMapRef:
                     name: liferay-network
             -   secretRef:
+                    name: elasticsearch-connection-details
+            -   secretRef:
                     name: managed-service-details
     customInitContainers:
         x-cloud-sql-auth-proxy-enabled:
