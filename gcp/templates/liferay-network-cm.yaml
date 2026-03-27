@@ -6,7 +6,6 @@ data:
     {{- if $network.hostnames }}
     LIFERAY_COMPANY_PERIOD_DEFAULT_PERIOD_VIRTUAL_PERIOD_HOST_PERIOD_NAME: {{ index $network.hostnames 0 | quote }}
     LIFERAY_COMPANY_PERIOD_DEFAULT_PERIOD_WEB_PERIOD_ID: {{ index $network.hostnames 0 | quote }}
-    # We append localhost and the POD_IP environment variable string
     LIFERAY_VIRTUAL_PERIOD_HOSTS_PERIOD_VALID_PERIOD_HOSTS: {{ append $network.hostnames "localhost" | append "${env.POD_IP}" | join "," | quote }}
     {{- end }}
 kind: ConfigMap
