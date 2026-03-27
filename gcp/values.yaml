@@ -7,7 +7,7 @@ liferay-default:
         sidecar.opentelemetry.io/inject: "false"
     configmap:
         data:
-            com.liferay.portal.search.elasticsearch8.configuration.ElasticsearchConfiguration: |
+            com.liferay.portal.search.elasticsearch8.configuration.ElasticsearchConfiguration.config: |
                 active=B"true"
                 authenticationEnabled=B"false"
                 httpSSLEnabled=B"false"
