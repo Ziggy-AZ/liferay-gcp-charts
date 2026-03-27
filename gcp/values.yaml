@@ -130,7 +130,7 @@ liferay-default:
                         curl -f http://localhost:9801/startup && \
                         curl -f http://localhost:8080/c/portal/robots
         failureThreshold: 90
-        httpGet: {}
+        httpGet: null
         periodSeconds: 10
         timeoutSeconds: 5
     volumeClaimTemplates:
