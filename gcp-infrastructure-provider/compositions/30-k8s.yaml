@@ -116,6 +116,7 @@ spec:
     managementPolicies: {{ $managementPoliciesOnce }}
     readiness:
         celQuery: object.status.atProvider.manifest.status.succeeded == 1
+        policy: Successful
 ---
 {{- $isReady := false -}}
 {{- if .observed.resources -}}
