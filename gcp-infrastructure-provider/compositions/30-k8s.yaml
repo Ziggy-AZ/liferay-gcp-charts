@@ -161,3 +161,8 @@ spec:
             type: Opaque
     managementPolicies: {{ $managementPolicies }}
 {{- end }}
+---
+apiVersion: gcp.liferay.com/v1alpha1
+kind: LiferayInfrastructure
+status:
+    managedServiceDetailsReady: {{ $isReady }}

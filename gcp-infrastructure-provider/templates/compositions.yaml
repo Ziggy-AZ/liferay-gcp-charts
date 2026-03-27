@@ -49,3 +49,6 @@ spec:
                 kind: Input
                 source: Inline
             step: go-templating
+        -   functionRef:
+                name: function-auto-ready
+            step: auto-detect-ready-composed-resources
