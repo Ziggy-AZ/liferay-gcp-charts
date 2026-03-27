@@ -1,6 +1,5 @@
 {{- $env := index .context "apiextensions.crossplane.io/environment" -}}
 {{- $xr := .observed.composite.resource -}}
-
 {{- $cmkEnabled := $xr.spec.cmk.enabled | default false -}}
 {{- $commonTags := $xr.spec.commonTags | default dict -}}
 {{- $databaseInstanceName := printf "%s-db-instance" $xr.metadata.name -}}
@@ -17,18 +16,15 @@
 {{- $overlay := $xr.spec.overlay | default dict -}}
 {{- $projectId := $xr.spec.projectId -}}
 {{- $storage := $xr.spec.storage | default dict -}}
-
 {{- $databaseIamUser := printf "%s@%s.iam" $gsaName $env.projectId -}}
 {{- $gsaEmail := printf "%s@%s.iam.gserviceaccount.com" $gsaName $env.projectId -}}
 {{- $hash := printf "%s-%s" $databaseName $env.projectId | sha256sum | trunc 7 -}}
-{{- $labels := merge $commonTags (dict "app" "liferay" "environment-id" $environmentId "project-id" $projectId) -}}
 {{- $managementPolicies := $xr.spec.orphanOnDelete | ternary (list "Create" "Observe" "Update") (list "*") | toJson -}}
 {{- $managementPoliciesNoUpdate := $xr.spec.orphanOnDelete | ternary (list "Create" "Observe") (list "Create" "Delete" "Observe") | toJson -}}
 {{- $projectIdFull := printf "%s-%s" $projectId $environmentId -}}
 {{- $region := $databaseSpec.region | default "us-central1" -}}
+{{- $labels := merge $commonTags (dict "app" "liferay" "environment-id" $environmentId "project-id" $projectId) -}}
 {{- $uidHash := printf "%s-%s" $env.projectNumber $projectIdFull | sha256sum | trunc 6 -}}
-
 {{- $baseName := printf "%.18s-%s" $projectIdFull $uidHash -}}
-
 {{- $cmkKeyName := printf "projects/%s/locations/%s/keyRings/%s-keyring/cryptoKeys/%s-key" $env.projectId $region $baseName $baseName -}}
 {{- $instanceConnectionName := printf "%s:%s:%s" $env.projectId $region $databaseInstanceName -}}
