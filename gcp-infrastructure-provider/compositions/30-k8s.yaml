@@ -115,7 +115,7 @@ spec:
                                 name: term-log
     managementPolicies: {{ $managementPoliciesOnce }}
     readiness:
-        celQuery: object.status.atProvider.manifest.status.succeeded == 1
+        celQuery: self.status.atProvider.manifest.status.succeeded == 1
         policy: DeriveFromCelQuery
 ---
 {{- $isReady := false -}}
