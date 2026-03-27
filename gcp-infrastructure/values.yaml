@@ -13,7 +13,9 @@ environmentId: ""
 forceDestroy: false
 gateway:
     className: ""
+    clientTrafficPolicySpec: {}
     name: ""
+    spec: {}
 license:
     externalSecretName: ""
     targetSecretName: liferay-license
