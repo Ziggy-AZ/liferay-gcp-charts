@@ -1,18 +1,23 @@
-{{- $isReady := false -}}
-{{- if .observed.resources -}}
-    {{- if (index .observed.resources "liferay-db-grant-job") -}}
-        {{- $job := index .observed.resources "liferay-db-grant-job" -}}
-        {{- range $cond := $job.resource.status.conditions | default list }}
-            {{- if and (eq $cond.type "Ready") (eq $cond.status "True") }}
-                {{- $isReady = true }}
-            {{- end }}
-        {{- end }}
-    {{- end }}
-{{- end }}
-apiVersion: gcp.liferay.com/v1alpha1
-kind: LiferayInfrastructure
-status:
-    managedServiceDetailsReady: {{ $isReady }}
+apiVersion: kubernetes.m.crossplane.io/v1alpha1
+kind: Object
+metadata:
+    annotations:
+        gotemplating.fn.crossplane.io/composition-resource-name: liferay-ksa
+    labels:
+        {{- $labels | toYaml | nindent 8 }}
+    name: {{ $xr.metadata.name }}-ksa
+spec:
+    forProvider:
+        manifest:
+            apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+                annotations:
+                    iam.gke.io/gcp-service-account: {{ $gsaEmail }}
+                labels:
+                    {{- $labels | toYaml | nindent 20 }}
+                name: liferay-default
+                namespace: {{ $namespace }}
 ---
 apiVersion: kubernetes.m.crossplane.io/v1alpha1
 kind: Object
@@ -53,7 +58,7 @@ spec:
                                         valueFrom:
                                             secretKeyRef:
                                                 key: password
-                                                name: {{ $xr.metadata.name }}-db-root-password
+                                                name: {{ $databaseSpec.rootPasswordSecretName }}
                                 image: postgres:16-alpine
                                 name: sql-runner
                                 resources:
@@ -110,30 +115,20 @@ spec:
                                 name: term-log
     managementPolicies: {{ $managementPoliciesOnce }}
     readiness:
-        celQuery: object.status.atProvider.manifest.status.succeeded == 1
+        celQuery: object.status.succeeded == 1
         policy: DeriveFromCelQuery
 ---
-apiVersion: kubernetes.m.crossplane.io/v1alpha1
-kind: Object
-metadata:
-    annotations:
-        gotemplating.fn.crossplane.io/composition-resource-name: liferay-ksa
-    labels:
-        {{- $labels | toYaml | nindent 8 }}
-    name: {{ $xr.metadata.name }}-ksa
-spec:
-    forProvider:
-        manifest:
-            apiVersion: v1
-            kind: ServiceAccount
-            metadata:
-                annotations:
-                    iam.gke.io/gcp-service-account: {{ $gsaEmail }}
-                labels:
-                    {{- $labels | toYaml | nindent 20 }}
-                name: liferay-default
-                namespace: {{ $namespace }}
----
+{{- $isReady := false -}}
+{{- if .observed.resources -}}
+    {{- if (index .observed.resources "liferay-db-grant-job") -}}
+        {{- $job := index .observed.resources "liferay-db-grant-job" -}}
+        {{- range $cond := $job.resource.status.conditions | default list }}
+            {{- if and (eq $cond.type "Ready") (eq $cond.status "True") }}
+                {{- $isReady = true }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+{{- end }}
 {{- if $isReady }}
 apiVersion: kubernetes.m.crossplane.io/v1alpha1
 kind: Object
@@ -167,3 +162,8 @@ spec:
             type: Opaque
     managementPolicies: {{ $managementPolicies }}
 {{- end }}
+---
+apiVersion: gcp.liferay.com/v1alpha1
+kind: LiferayInfrastructure
+status:
+    managedServiceDetailsReady: {{ $isReady }}

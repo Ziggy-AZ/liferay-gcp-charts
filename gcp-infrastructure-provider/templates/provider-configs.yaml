@@ -16,20 +16,3 @@ metadata:
 spec:
     credentials:
         source: InjectedIdentity
----
-apiVersion: tf.upbound.io/v1beta1
-kind: ProviderConfig
-metadata:
-    name: default
-spec:
-    configuration: |
-        terraform {
-          required_providers {
-            random={
-              source="hashicorp/random",
-              version="3.6.3",
-            }
-          }
-        }
-    credentials:
-        -   source: None

@@ -272,34 +272,3 @@ spec:
     serviceAccountTemplate:
         metadata:
             name: provider-kubernetes
----
-apiVersion: pkg.crossplane.io/v1beta1
-kind: DeploymentRuntimeConfig
-metadata:
-    annotations:
-        argocd.argoproj.io/sync-wave: "-90"
-    name: terraform-config
-spec:
-    deploymentTemplate:
-        spec:
-            selector:
-                matchLabels:
-                    pkg.crossplane.io/provider: provider-terraform
-            template:
-                metadata:
-                    labels:
-                        pkg.crossplane.io/provider: provider-terraform
-                spec:
-                    containers:
-                        -   name: package-runtime
-                            resources:
-                                limits:
-                                    cpu: 1000m
-                                    memory: 2Gi
-                                requests:
-                                    cpu: 250m
-                                    memory: 512Mi
-                    serviceAccountName: provider-terraform
-    serviceAccountTemplate:
-        metadata:
-            name: provider-terraform

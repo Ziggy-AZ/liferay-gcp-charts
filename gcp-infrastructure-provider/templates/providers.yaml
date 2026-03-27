@@ -3,22 +3,22 @@ kind: Provider
 metadata:
     annotations:
         argocd.argoproj.io/sync-wave: "-80"
-    name: provider-gcp-cloudplatform
+    name: provider-gcp-compute
 spec:
-    package: xpkg.upbound.io/upbound/provider-gcp-cloudplatform:v2.5.0
+    package: xpkg.upbound.io/upbound/provider-gcp-compute:v2.5.0
     runtimeConfigRef:
-        name: gcp-cloudplatform-config
+        name: gcp-compute-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
 metadata:
     annotations:
         argocd.argoproj.io/sync-wave: "-80"
-    name: provider-gcp-compute
+    name: provider-gcp-cloudplatform
 spec:
-    package: xpkg.upbound.io/upbound/provider-gcp-compute:v2.5.0
+    package: xpkg.upbound.io/upbound/provider-gcp-cloudplatform:v2.5.0
     runtimeConfigRef:
-        name: gcp-compute-config
+        name: gcp-cloudplatform-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider
@@ -65,17 +65,6 @@ spec:
     runtimeConfigRef:
         name: kubernetes-config
     skipDependencyResolution: true
----
-apiVersion: pkg.crossplane.io/v1
-kind: Provider
-metadata:
-    annotations:
-        argocd.argoproj.io/sync-wave: "-80"
-    name: provider-terraform
-spec:
-    package: xpkg.upbound.io/upbound/provider-terraform:v0.19.0
-    runtimeConfigRef:
-        name: terraform-config
 ---
 apiVersion: pkg.crossplane.io/v1
 kind: Provider

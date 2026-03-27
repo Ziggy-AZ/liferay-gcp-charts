@@ -1,21 +1,4 @@
 apiVersion: sql.gcp.m.upbound.io/v1beta1
-kind: Database
-metadata:
-    annotations:
-        crossplane.io/external-name: {{ $databaseName }}
-        gotemplating.fn.crossplane.io/composition-resource-name: liferay-db
-    labels:
-        {{- $labels | toYaml | nindent 8 }}
-    name: {{ $xr.metadata.name }}-db
-spec:
-    forProvider:
-        charset: UTF8
-        collation: en_US.UTF8
-        instanceSelector:
-            matchControllerRef: true
-    managementPolicies: {{ $managementPolicies }}
----
-apiVersion: sql.gcp.m.upbound.io/v1beta1
 kind: DatabaseInstance
 metadata:
     annotations:
@@ -33,7 +16,7 @@ spec:
         region: {{ $region }}
         rootPasswordSecretRef:
             key: password
-            name: {{ $xr.metadata.name }}-db-root-password
+            name: {{ $databaseSpec.rootPasswordSecretName }}
         settings:
             databaseFlags:
                 -   name: cloudsql.iam_authentication
@@ -50,6 +33,39 @@ spec:
             tier: {{ $databaseSpec.instanceType | default "db-custom-1-3840" }}
             userLabels:
                 {{- $labels | toYaml | nindent 16 }}
+    managementPolicies: {{ $managementPolicies }}
+---
+apiVersion: sql.gcp.m.upbound.io/v1beta1
+kind: Database
+metadata:
+    annotations:
+        crossplane.io/external-name: {{ $databaseName }}
+        gotemplating.fn.crossplane.io/composition-resource-name: liferay-db
+    labels:
+        {{- $labels | toYaml | nindent 8 }}
+    name: {{ $xr.metadata.name }}-db
+spec:
+    forProvider:
+        charset: UTF8
+        collation: en_US.UTF8
+        instanceSelector:
+            matchControllerRef: true
+    managementPolicies: {{ $managementPolicies }}
+---
+apiVersion: sql.gcp.m.upbound.io/v1beta1
+kind: User
+metadata:
+    annotations:
+        crossplane.io/external-name: {{ $databaseIamUser }}
+        gotemplating.fn.crossplane.io/composition-resource-name: liferay-iam-user
+    labels:
+        {{- $labels | toYaml | nindent 8 }}
+    name: {{ $xr.metadata.name }}-db-user
+spec:
+    forProvider:
+        instanceSelector:
+            matchControllerRef: true
+        type: CLOUD_IAM_SERVICE_ACCOUNT
     managementPolicies: {{ $managementPolicies }}
 ---
 apiVersion: protection.crossplane.io/v1beta1
@@ -89,62 +105,3 @@ spec:
         kind: DatabaseInstance
         resourceRef:
             name: {{ $databaseInstanceName }}
----
-apiVersion: protection.crossplane.io/v1beta1
-kind: Usage
-metadata:
-    annotations:
-        gotemplating.fn.crossplane.io/composition-resource-name: usage-workspace-by-instance
-    name: {{ $xr.metadata.name }}-workspace-by-instance
-    namespace: {{ $namespace }}
-spec:
-    by:
-        apiVersion: sql.gcp.m.upbound.io/v1beta1
-        kind: DatabaseInstance
-        resourceRef:
-            name: {{ $databaseInstanceName }}
-    of:
-        apiVersion: tf.upbound.io/v1beta1
-        kind: Workspace
-        resourceRef:
-            name: {{ $xr.metadata.name }}-db-password-workspace
----
-apiVersion: sql.gcp.m.upbound.io/v1beta1
-kind: User
-metadata:
-    annotations:
-        crossplane.io/external-name: {{ $databaseIamUser }}
-        gotemplating.fn.crossplane.io/composition-resource-name: liferay-iam-user
-    labels:
-        {{- $labels | toYaml | nindent 8 }}
-    name: {{ $xr.metadata.name }}-db-user
-spec:
-    forProvider:
-        instanceSelector:
-            matchControllerRef: true
-        type: CLOUD_IAM_SERVICE_ACCOUNT
-    managementPolicies: {{ $managementPolicies }}
----
-apiVersion: tf.upbound.io/v1beta1
-kind: Workspace
-metadata:
-    annotations:
-        gotemplating.fn.crossplane.io/composition-resource-name: database-password-workspace
-    name: {{ $xr.metadata.name }}-db-password-workspace
-spec:
-    forProvider:
-        source: Inline
-        module: |
-            resource "random_password" "password" {
-              length=16,
-              override_special="!#%+7QZ_b",
-              special=true,
-            }
-            output "password" {
-              sensitive=true,
-              value=random_password.password.result,
-            }
-    writeConnectionSecretToRef:
-        name: {{ $xr.metadata.name }}-db-root-password
-        namespace: {{ $namespace }}
-    managementPolicies: {{ $managementPoliciesNoUpdate }}
