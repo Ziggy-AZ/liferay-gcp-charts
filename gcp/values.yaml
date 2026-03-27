@@ -8,11 +8,9 @@ liferay-default:
     configmap:
         data:
             com.liferay.portal.search.elasticsearch8.configuration.ElasticsearchConfiguration.config: |
-                active=B"true"
                 authenticationEnabled=B"false"
                 httpSSLEnabled=B"false"
                 networkHostAddresses=["$[env:ELASTICSEARCH_URL]"]
-                operationMode="REMOTE"
                 productionModeEnabled=B"false"
             com.liferay.portal.store.gcs.configuration.GCSStoreConfiguration.config: |
                 bucketName="$[env:LIFERAY_GCS_BUCKET_NAME]"
