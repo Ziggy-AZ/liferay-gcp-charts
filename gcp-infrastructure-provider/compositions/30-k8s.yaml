@@ -58,7 +58,7 @@ spec:
                                         valueFrom:
                                             secretKeyRef:
                                                 key: password
-                                                name: {{ $databaseName }}-root-password-secret
+                                                name: {{ $databaseSpec.rootPasswordSecretName }}
                                 image: postgres:16-alpine
                                 name: sql-runner
                                 resources:
