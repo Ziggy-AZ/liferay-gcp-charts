@@ -11,7 +11,7 @@ liferay-default:
                 authenticationEnabled=B"false"
                 httpSSLEnabled=B"false"
                 networkHostAddresses=["$[env:ELASTICSEARCH_URL]"]
-                productionModeEnabled=B"false"
+                productionModeEnabled=B"true"
             com.liferay.portal.store.gcs.configuration.GCSStoreConfiguration.config: |
                 bucketName="$[env:LIFERAY_GCS_BUCKET_NAME]"
     customEnv:
