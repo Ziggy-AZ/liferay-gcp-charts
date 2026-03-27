@@ -12,7 +12,10 @@ spec:
     commonTags:
         environment_id: {{ .Values.environmentId }}
         project_id: {{ .Values.projectId }}
-    database: {{ .Values.database | toYaml | nindent 8 }}
+    database:
+        {{- $database := .Values.database -}}
+        {{- $_ := set $database "rootPasswordSecretName" (printf "%s-db-root-password" .Release.Name) -}}
+        {{- $database | toYaml | nindent 8 }}
     environmentId: {{ .Values.environmentId }}
     forceDestroy: {{ .Values.forceDestroy }}
     orphanOnDelete: {{ .Values.orphanOnDelete }}

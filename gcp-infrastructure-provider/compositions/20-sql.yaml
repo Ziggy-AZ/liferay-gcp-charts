@@ -1,24 +1,3 @@
-apiVersion: kubernetes.m.crossplane.io/v1alpha1
-kind: Object
-metadata:
-    annotations:
-        crossplane.io/external-name: {{ $databaseName }}-root-password-secret
-        gotemplating.fn.crossplane.io/composition-resource-name: database-primary-root-password-secret
-    name: {{ $databaseName }}-root-password-secret
-    namespace: {{ $namespace }}
-spec:
-    forProvider:
-        manifest:
-            apiVersion: v1
-            kind: Secret
-            metadata:
-                name: {{ $databaseName }}-root-password-secret
-                namespace: {{ $namespace }}
-            stringData:
-                password: {{ print (randAlphaNum 16) "!#%+7QZ_b" | shuffle }}
-            type: Opaque
-    managementPolicies: {{ $managementPoliciesNoUpdate }}
----
 apiVersion: sql.gcp.m.upbound.io/v1beta1
 kind: DatabaseInstance
 metadata:
@@ -37,7 +16,7 @@ spec:
         region: {{ $region }}
         rootPasswordSecretRef:
             key: password
-            name: {{ $databaseName }}-root-password-secret
+            name: {{ $databaseSpec.rootPasswordSecretName }}
         settings:
             databaseFlags:
                 -   name: cloudsql.iam_authentication
