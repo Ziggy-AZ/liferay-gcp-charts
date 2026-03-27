@@ -3,12 +3,13 @@
 {{- if and $network $network.enabled }}
 apiVersion: v1
 data:
-    {{- if and .network.hostnames }}
-    LIFERAY_COMPANY_PERIOD_DEFAULT_PERIOD_VIRTUAL_PERIOD_HOST_PERIOD_NAME: {{ index .network.hostnames 0 | quote }}
-    LIFERAY_COMPANY_PERIOD_DEFAULT_PERIOD_WEB_PERIOD_ID: {{ index .network.hostnames 0 | quote }}
-    LIFERAY_VIRTUAL_PERIOD_HOSTS_PERIOD_VALID_PERIOD_HOSTS: {{ join "," .network.hostnames | quote }}
+    {{- if $network.hostnames }}
+    LIFERAY_COMPANY_PERIOD_DEFAULT_PERIOD_VIRTUAL_PERIOD_HOST_PERIOD_NAME: {{ index $network.hostnames 0 | quote }}
+    LIFERAY_COMPANY_PERIOD_DEFAULT_PERIOD_WEB_PERIOD_ID: {{ index $network.hostnames 0 | quote }}
+    LIFERAY_VIRTUAL_PERIOD_HOSTS_PERIOD_VALID_PERIOD_HOSTS: {{ join "," $network.hostnames | quote }}
     {{- end }}
 kind: ConfigMap
 metadata:
     name: liferay-network
     namespace: {{ .Release.Namespace }}
+{{- end }}
