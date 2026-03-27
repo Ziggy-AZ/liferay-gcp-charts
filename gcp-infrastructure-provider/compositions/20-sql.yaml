@@ -49,7 +49,7 @@ spec:
                 queryInsightsEnabled: {{ $databaseSpec.queryInsightsEnabled | default true }}
             ipConfiguration:
                 ipv4Enabled: false
-                privateNetwork: "projects/{{ $env.projectId }}/global/networks/{{ $env.vpcName }}"
+                privateNetwork: projects/{{ $env.projectId }}/global/networks/{{ $env.vpcName }}
                 sslMode: TRUSTED_CLIENT_CERTIFICATE_REQUIRED
             tier: {{ $databaseSpec.instanceType | default "db-custom-1-3840" }}
             userLabels:

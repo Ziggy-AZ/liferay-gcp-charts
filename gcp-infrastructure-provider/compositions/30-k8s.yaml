@@ -42,17 +42,17 @@ spec:
                     spec:
                         containers:
                             -   args:
-                                    - |
-                                        set -e
-                                        until pg_isready -h 127.0.0.1 -p {{ $databasePort }}; do sleep 2; done
-                                        psql -h 127.0.0.1 -v "ON_ERROR_STOP=1" -U postgres -d {{ $databaseName }} <<EOF
-                                        GRANT ALL PRIVILEGES ON DATABASE "{{ $databaseName }}" TO "{{ $databaseIamUser }}";
-                                        GRANT ALL ON ALL TABLES IN SCHEMA public TO "{{ $databaseIamUser }}";
-                                        GRANT cloudsqlsuperuser TO "{{ $databaseIamUser }}";
-                                        EOF
+                                    -   |
+                                            set -e
+                                            until pg_isready -h 127.0.0.1 -p {{ $databasePort }}; do sleep 2; done
+                                            psql -h 127.0.0.1 -v "ON_ERROR_STOP=1" -U postgres -d {{ $databaseName }} <<EOF
+                                            GRANT ALL PRIVILEGES ON DATABASE "{{ $databaseName }}" TO "{{ $databaseIamUser }}";
+                                            GRANT ALL ON ALL TABLES IN SCHEMA public TO "{{ $databaseIamUser }}";
+                                            GRANT cloudsqlsuperuser TO "{{ $databaseIamUser }}";
+                                            EOF
                                 command:
-                                    - /bin/sh
-                                    - -c
+                                    -   /bin/sh
+                                    -   -c
                                 env:
                                     -   name: PGPASSWORD
                                         valueFrom:
@@ -79,11 +79,11 @@ spec:
                                         type: RuntimeDefault
                         initContainers:
                             -   args:
-                                    - --auto-iam-authn
-                                    - --port={{ $databasePort }}
-                                    - --private-ip
-                                    - --structured-logs
-                                    - "{{ $instanceConnectionName }}"
+                                    -   --auto-iam-authn
+                                    -   --port={{ $databasePort }}
+                                    -   --private-ip
+                                    -   --structured-logs
+                                    -   "{{ $instanceConnectionName }}"
                                 image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.1
                                 name: cloud-sql-proxy
                                 resources:
@@ -115,7 +115,7 @@ spec:
                                 name: term-log
     managementPolicies: {{ $managementPoliciesOnce }}
     readiness:
-        celQuery: "object.status.atProvider.manifest.status.succeeded == 1"
+        celQuery: object.status.atProvider.manifest.status.succeeded == 1
 ---
 {{- $isReady := false -}}
 {{- if .observed.resources -}}
@@ -155,7 +155,7 @@ spec:
                 DATABASE_USERNAME: {{ $databaseIamUser | toString }}
                 ELASTICSEARCH_HOST: es-es-http
                 ELASTICSEARCH_PORT: "9200"
-                ELASTICSEARCH_URL: "http://es-es-http:9200"
+                ELASTICSEARCH_URL: http://es-es-http:9200
                 LIFERAY_GCS_BUCKET_NAME: {{ $baseName }}-dl
                 LIFERAY_OVERLAY_BUCKET_NAME: {{ $baseName }}-overlay
             type: Opaque
