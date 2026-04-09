@@ -1,7 +1,12 @@
+backup:
+    enabled: false
+    region: ""
+    retentionDays: 30
+    storageClass: NEARLINE
 cmk:
     enabled: false
 database:
-    databaseVersion: POSTGRES_16
+    databaseVersion: POSTGRES_18
     deletionProtection: true
     instanceType: db-custom-1-3840
     queryInsightsEnabled: true

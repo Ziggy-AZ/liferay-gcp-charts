@@ -67,7 +67,21 @@ customInitContainers:
                         -   |
                             rm --force --recursive /temp/liferay/liferay.pid 2>/dev/null
 
-                            mkdir --parents /temp/liferay
+                            mkdir --parents \
+                                /temp/liferay \
+                                /temp/liferay/logs \
+                                /temp/liferay/metrics \
+                                /temp/liferay/reports \
+                                /temp/liferay/routes \
+                                /temp/liferay/work \
+                                /temp/osgi/client-extensions \
+                                /temp/osgi/configs \
+                                /temp/osgi/modules \
+                                /temp/osgi/state \
+                                /temp/system/tmp \
+                                /temp/tomcat/logs \
+                                /temp/tomcat/temp \
+                                /temp/tomcat/work
 
                             touch /temp/liferay/liferay.pid
 
@@ -259,10 +273,6 @@ overlay:
 podAnnotations: {}
 podLabels: {}
 podSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-        drop:
-            -   ALL
     fsGroup: 1000
     runAsNonRoot: true
     runAsUser: 1000
@@ -301,7 +311,8 @@ securityContext:
     capabilities:
         drop:
             -   ALL
-    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
     seccompProfile:
         type: RuntimeDefault
 service:

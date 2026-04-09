@@ -1,0 +1,29 @@
+{{- if $backup.enabled }}
+{{- $backupVaultLabels := merge (dict) $labels (dict "liferay.com/is-backup-vault" "true") }}
+apiVersion: storage.gcp.m.upbound.io/v1beta1
+kind: Bucket
+metadata:
+    annotations:
+        gotemplating.fn.crossplane.io/composition-resource-name: {{ $baseName }}-vault
+    labels:
+        {{- $backupVaultLabels | toYaml | nindent 8 }}
+    name: {{ $baseName }}-vault
+spec:
+    forProvider:
+        {{- if $cmkEnabled }}
+        encryption:
+            defaultKmsKeyName: {{ $cmkKeyName | quote }}
+        {{- end }}
+        forceDestroy: {{ $forceDestroy }}
+        labels:
+            {{- $backupVaultLabels | toYaml | nindent 12 }}
+        lifecycleRule:
+            -   action:
+                    type: Delete
+                condition:
+                    age: {{ add $backup.retentionDays 2 }}
+        location: {{ $backup.region | default $region }}
+        storageClass: {{ $backup.storageClass | quote }}
+        uniformBucketLevelAccess: true
+    managementPolicies: {{ $managementPolicies }}
+{{- end }}
