@@ -270,7 +270,6 @@ overlay:
     bucketName: ""
     copy: []
     enabled: false 
-podAnnotations: {}
 podLabels: {}
 podSecurityContext:
     fsGroup: 1000
