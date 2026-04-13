@@ -36,14 +36,18 @@ spec:
 {{- if .observed.resources -}}
     {{- if (index .observed.resources "elasticsearch-observer") -}}
         {{- $es := index .observed.resources "elasticsearch-observer" -}}
-        {{- $status := $es.resource.status.health | default "" -}}
-        {{- if or (eq $status "green") (eq $status "yellow") -}}
-            {{- $isSearchReady = true -}}
+        {{- if $es.resource.status -}}
+            {{- $status := $es.resource.status.health | default "" -}}
+            {{- if or (eq $status "green") (eq $status "yellow") -}}
+                {{- $isSearchReady = true -}}
+            {{- end -}}
         {{- end -}}
     {{- end -}}
     {{- if (index .observed.resources "elasticsearch-secret-observer") -}}
         {{- $secret := index .observed.resources "elasticsearch-secret-observer" -}}
-        {{- $password = index $secret.resource.data "elastic" | default "" -}}
+        {{- if $secret.resource.data -}}
+            {{- $password = index $secret.resource.data "elastic" | default "" -}}
+        {{- end -}}
     {{- end -}}
 {{- end -}}
 {{- if and $isSearchReady $password }}
