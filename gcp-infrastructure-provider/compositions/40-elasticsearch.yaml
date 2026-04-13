@@ -31,11 +31,13 @@ spec:
                 namespace: {{ $searchNamespace }}
     managementPolicies: ["Observe"]
 {{- $es := (index .observed.resources "elasticsearch-observer" | default dict).resource | default dict -}}
-{{- $esManifest := ($es.status | default dict).atProvider | default dict | index "manifest" | default dict -}}
+{{- $esAtProvider := ($es.status | default dict).atProvider | default dict -}}
+{{- $esManifest := (index $esAtProvider "manifest" | default dict) -}}
 {{- $isSearchReady := or (eq ($esManifest.status.health | default "") "green") (eq ($esManifest.status.health | default "") "yellow") -}}
 
 {{- $secret := (index .observed.resources "elasticsearch-secret-observer" | default dict).resource | default dict -}}
-{{- $secretManifest := ($secret.status | default dict).atProvider | default dict | index "manifest" | default dict -}}
+{{- $secretAtProvider := ($secret.status | default dict).atProvider | default dict -}}
+{{- $secretManifest := (index $secretAtProvider "manifest" | default dict) -}}
 {{- $password := ($secretManifest.data | default dict).elastic | default "" -}}
 
 {{- if and $isSearchReady $password }}
