@@ -36,8 +36,8 @@ spec:
 {{- if .observed.resources -}}
     {{- if (index .observed.resources "elasticsearch-observer") -}}
         {{- $es := index .observed.resources "elasticsearch-observer" -}}
-        {{- if $es.resource.status -}}
-            {{- $status := $es.resource.status.health | default "" -}}
+        {{- if and $es.resource.status $es.resource.status.atProvider $es.resource.status.atProvider.manifest $es.resource.status.atProvider.manifest.status -}}
+            {{- $status := $es.resource.status.atProvider.manifest.status.health | default "" -}}
             {{- if or (eq $status "green") (eq $status "yellow") -}}
                 {{- $isSearchReady = true -}}
             {{- end -}}
@@ -45,8 +45,8 @@ spec:
     {{- end -}}
     {{- if (index .observed.resources "elasticsearch-secret-observer") -}}
         {{- $secret := index .observed.resources "elasticsearch-secret-observer" -}}
-        {{- if $secret.resource.data -}}
-            {{- $password = index $secret.resource.data "elastic" | default "" -}}
+        {{- if and $secret.resource.status $secret.resource.status.atProvider $secret.resource.status.atProvider.manifest $secret.resource.status.atProvider.manifest.data -}}
+            {{- $password = index $secret.resource.status.atProvider.manifest.data "elastic" | default "" -}}
         {{- end -}}
     {{- end -}}
 {{- end -}}
