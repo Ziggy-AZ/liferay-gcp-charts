@@ -30,24 +30,29 @@ spec:
                 name: {{ $searchSecretName }}
                 namespace: {{ $searchNamespace }}
     managementPolicies: ["Observe"]
-{{- $es := (index .observed.resources "elasticsearch-observer" | default dict).resource | default dict -}}
-{{- $esAtProvider := ($es.status | default dict).atProvider | default dict -}}
+---
+{{- $esObj := (index .observed.resources "elasticsearch-observer" | default dict).resource | default dict -}}
+{{- $esAtProvider := ($esObj.status | default dict).atProvider | default dict -}}
 {{- $esManifest := (index $esAtProvider "manifest" | default dict) -}}
-{{- $isSearchReady := or (eq ($esManifest.status.health | default "") "green") (eq ($esManifest.status.health | default "") "yellow") -}}
+{{- $esStatus := (index $esManifest "status" | default dict) -}}
+{{- $health := (index $esStatus "health" | default "") -}}
+{{- $isSearchReady := or (eq $health "green") (eq $health "yellow") -}}
 
-{{- $secret := (index .observed.resources "elasticsearch-secret-observer" | default dict).resource | default dict -}}
-{{- $secretAtProvider := ($secret.status | default dict).atProvider | default dict -}}
+{{- $secretObj := (index .observed.resources "elasticsearch-secret-observer" | default dict).resource | default dict -}}
+{{- $secretAtProvider := ($secretObj.status | default dict).atProvider | default dict -}}
 {{- $secretManifest := (index $secretAtProvider "manifest" | default dict) -}}
-{{- $password := ($secretManifest.data | default dict).elastic | default "" -}}
+{{- $secretData := (index $secretManifest "data" | default dict) -}}
+{{- $password := (index $secretData "elastic" | default "") -}}
 
 {{- if and $isSearchReady $password }}
 apiVersion: kubernetes.m.crossplane.io/v1alpha1
 kind: Object
-...
 metadata:
     annotations:
         crossplane.io/external-name: elasticsearch-connection-details
         gotemplating.fn.crossplane.io/composition-resource-name: elasticsearch-connection-details-secret
+    labels:
+        {{- $labels | toYaml | nindent 8 }}
     name: {{ $xr.metadata.name }}-elasticsearch-connection-details-secret
 spec:
     forProvider:
@@ -55,6 +60,8 @@ spec:
             apiVersion: v1
             kind: Secret
             metadata:
+                labels:
+                    {{- $labels | toYaml | nindent 20 }}
                 name: elasticsearch-connection-details
                 namespace: {{ $namespace }}
             data:
