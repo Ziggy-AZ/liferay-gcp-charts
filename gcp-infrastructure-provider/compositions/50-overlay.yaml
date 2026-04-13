@@ -30,7 +30,6 @@ metadata:
         gotemplating.fn.crossplane.io/composition-resource-name: liferay-gsa-overlay-bucket-iam
     labels:
         {{- $labels | toYaml | nindent 8 }}
-    name: {{ $prefixedName }}-overlay-bucket-iam
 spec:
     forProvider:
         bucketRef:

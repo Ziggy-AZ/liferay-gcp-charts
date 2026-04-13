@@ -17,10 +17,9 @@ metadata:
         gotemplating.fn.crossplane.io/composition-resource-name: liferay-wi-binding
     labels:
         {{- $labels | toYaml | nindent 8 }}
-    name: {{ $prefixedName }}-wi-binding
 spec:
     forProvider:
-        member: principalSet://iam.googleapis.com/projects/{{ $env.projectNumber }}/locations/global/workloadIdentityPools/{{ $env.projectId }}.svc.id.goog/attribute.cluster_name/{{ $deploymentName }}-gke/ns/{{ $namespace }}/sa/liferay-default
+        member: serviceAccount:{{ $env.projectId }}.svc.id.goog[{{ $namespace }}/liferay-default]
         role: roles/iam.workloadIdentityUser
         serviceAccountIdRef:
             name: {{ $gsaName }}
@@ -32,7 +31,6 @@ metadata:
         gotemplating.fn.crossplane.io/composition-resource-name: liferay-sql-instance-user-role
     labels:
         {{- $labels | toYaml | nindent 8 }}
-    name: {{ $prefixedName }}-sql-instance-user-role
 spec:
     forProvider:
         member: serviceAccount:{{ $gsaEmail }}
@@ -46,7 +44,6 @@ metadata:
         gotemplating.fn.crossplane.io/composition-resource-name: liferay-sql-client-role
     labels:
         {{- $labels | toYaml | nindent 8 }}
-    name: {{ $prefixedName }}-sql-client-role
 spec:
     forProvider:
         member: serviceAccount:{{ $gsaEmail }}
