@@ -14,12 +14,7 @@ spec:
             selfSignedCertificate:
                 disabled: true
     nodeSets:
-        -   config:
-                xpack.security.authc.anonymous:
-                    authz_exception: true
-                    roles: superuser
-                    username: anonymous_user
-            count: {{ $search.nodeCount }}
+        -   count: {{ $search.nodeCount }}
             name: default
             podTemplate:
                 metadata:

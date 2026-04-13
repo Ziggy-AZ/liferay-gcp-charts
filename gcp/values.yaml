@@ -86,7 +86,9 @@ liferay-default:
                         function main {
                             echo "Waiting for Elasticsearch health to be \"green\" or \"yellow\" at \"${ELASTICSEARCH_URL}/_cluster/health\"."
 
-                            until wget -qO- --password="${ELASTICSEARCH_DEFAULT_PASSWORD}" --user="${ELASTICSEARCH_DEFAULT_USERNAME}" "${ELASTICSEARCH_URL}/_cluster/health" | grep -qE "\"status\":\"(green|yellow)\""
+                            local auth_url="http://${ELASTICSEARCH_DEFAULT_USERNAME}:${ELASTICSEARCH_DEFAULT_PASSWORD}@${ELASTICSEARCH_URL#*//}/_cluster/health"
+
+                            until wget -qO- "${auth_url}" | grep -qE "\"status\":\"(green|yellow)\""
                             do
                                 echo "Waiting for ES (current status: \"Red\" or \"Unreachable\")."
 
