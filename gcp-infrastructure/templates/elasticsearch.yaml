@@ -86,15 +86,4 @@ metadata:
         name: {{ $elasticsearchNamespace }}
         pod-security.kubernetes.io/enforce: restricted
     name: {{ $elasticsearchNamespace }}
----
-apiVersion: v1
-kind: Secret
-metadata:
-    name: elasticsearch-connection-details
-    namespace: {{ .Release.Namespace }}
-stringData:
-    ELASTICSEARCH_DEFAULT_PASSWORD_SECRET_NAME: "{{ include "elasticsearch.name" . }}-es-elastic-user"
-    ELASTICSEARCH_DEFAULT_USERNAME: elastic
-    ELASTICSEARCH_URL: http://{{ include "elasticsearch.name" . }}-es-http.{{ $elasticsearchNamespace }}.svc:9200
-type: Opaque
 {{- end -}}
