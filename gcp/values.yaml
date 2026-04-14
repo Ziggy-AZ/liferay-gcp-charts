@@ -13,16 +13,16 @@ liferay-default:
                 httpSSLEnabled=B"false"
                 networkHostAddresses=["$[env:ELASTICSEARCH_URL]"]
                 operationMode="REMOTE"
-                password="$[env:ELASTICSEARCH_DEFAULT_PASSWORD]"
+                password="$[env:ELASTICSEARCH_PASSWORD]"
                 productionModeEnabled=B"true"
-                username="$[env:ELASTICSEARCH_DEFAULT_USERNAME]"
+                username="$[env:ELASTICSEARCH_USERNAME]"
             com.liferay.portal.search.elasticsearch8.configuration.ElasticsearchConfiguration.config: |
                 authenticationEnabled=B"true"
                 httpSSLEnabled=B"false"
                 networkHostAddresses=["$[env:ELASTICSEARCH_URL]"]
-                password="$[env:ELASTICSEARCH_DEFAULT_PASSWORD]"
+                password="$[env:ELASTICSEARCH_PASSWORD]"
                 productionModeEnabled=B"true"
-                username="$[env:ELASTICSEARCH_DEFAULT_USERNAME]"
+                username="$[env:ELASTICSEARCH_USERNAME]"
             com.liferay.portal.store.gcs.configuration.GCSStoreConfiguration.config: |
                 bucketName="$[env:LIFERAY_GCS_BUCKET_NAME]"
     customEnv:
@@ -80,25 +80,7 @@ liferay-default:
                         type: RuntimeDefault
         x-wait-for-elasticsearch:
             -   command:
-                    -   sh
-                    -   -c
-                    -   |
-                        function main {
-                            echo "Waiting for Elasticsearch health to be \"green\" or \"yellow\" at \"${ELASTICSEARCH_URL}/_cluster/health\"."
-
-                            local auth_url="http://${ELASTICSEARCH_DEFAULT_USERNAME}:${ELASTICSEARCH_DEFAULT_PASSWORD}@${ELASTICSEARCH_URL#*//}/_cluster/health"
-
-                            until wget -qO- "${auth_url}" | grep -qE "\"status\":\"(green|yellow)\""
-                            do
-                                echo "Waiting for ES (current status: \"Red\" or \"Unreachable\")."
-
-                                sleep 5
-                            done
-
-                            echo "Elasticsearch is ready."
-                        }
-
-                        main
+                    -   /init-scripts/wait-for-elasticsearch.sh
                 envFrom:
                     -   secretRef:
                             name: elasticsearch-connection-details
@@ -113,6 +95,10 @@ liferay-default:
                     runAsUser: 1000
                     seccompProfile:
                         type: RuntimeDefault
+                volumeMounts:
+                    -   mountPath: /init-scripts/wait-for-elasticsearch.sh
+                        name: liferay-scripts
+                        subPath: wait-for-elasticsearch.sh
     customLabels:
         origin: liferay-gcp
     customVolumeMounts:
@@ -135,6 +121,11 @@ liferay-default:
             -   name: liferay-license
                 secret:
                     secretName: liferay-license
+        x-scripts:
+            -   configMap:
+                    defaultMode: 0755
+                    name: liferay-scripts
+                name: liferay-scripts
     network:
         enabled: true
         hostnames: []
