@@ -14,7 +14,13 @@ spec:
                 namespace: {{ $namespace }}
             data:
                 context: |
-                    {{ . | toJson }}
+                    {{ .context | toJson }}
+                desired_resources_summary: |
+                    {{ .desired.resources | keys | sortAlpha | toJson }}
+                observed_composite: |
+                    {{ .observed.composite | toJson }}
+                observed_resources_summary: |
+                    {{ .observed.resources | keys | sortAlpha | toJson }}
                 variables: |
                     backup: {{ $backup | toJson }}
                     backupTargetLabels: {{ $backupTargetLabels | toJson }}
