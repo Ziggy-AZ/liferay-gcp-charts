@@ -4,8 +4,6 @@ metadata:
     name: debug-context
     namespace: {{ .observed.composite.resource.metadata.namespace }}
 data:
-    context: |
-        {{- . | toJson }}
     variables: |
         backup: {{ $backup | toJson }}
         backupTargetLabels: {{ $backupTargetLabels | toJson }}
