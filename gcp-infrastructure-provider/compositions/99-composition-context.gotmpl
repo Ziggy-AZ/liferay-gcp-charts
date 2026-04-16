@@ -13,6 +13,8 @@ spec:
                 name: composition-context
                 namespace: {{ $namespace }}
             data:
+                context: |
+                    {{ . | toJson }}
                 variables: |
                     backup: {{ $backup | toJson }}
                     backupTargetLabels: {{ $backupTargetLabels | toJson }}
