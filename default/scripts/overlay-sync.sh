@@ -23,12 +23,25 @@ function main {
 		exit 1
 	fi
 
+	local include_pattern=""
+
+	if echo "${from_path}" | grep -q "\*"
+	then
+		include_pattern="${from_path##*/}"
+		from_path="${from_path%/*}"
+	fi
+
 	local source_uri=":${provider_type}:${bucket_name}/${from_path}"
 	local target_path="/temp/${into_path}"
 
 	_log_json "Copying from \"${source_uri}\" to \"${target_path}\"."
 
-	rclone copy "${source_uri}" "${target_path}" --log-level INFO --use-json-log
+	if [ -n "${include_pattern}" ]
+	then
+		rclone copy "${source_uri}" "${target_path}" --include "${include_pattern}" --log-level INFO --use-json-log
+	else
+		rclone copy "${source_uri}" "${target_path}" --log-level INFO --use-json-log
+	fi
 
 	_log_json "Copy completed successfully."
 }
