@@ -1,0 +1,79 @@
+suite: overlay init container
+templates:
+    -   configmap.yaml
+    -   workloads.yaml
+tests:
+    -   asserts:
+            -   notContains:
+                    content:
+                        name: liferay-overlay
+                    path: spec.template.spec.initContainers
+        documentSelector:
+            path: kind
+            value: StatefulSet
+        it: does not render when overlay is disabled
+        set:
+            overlay.enabled: false
+
+    -   asserts:
+            -   contains:
+                    content:
+                        name: liferay-overlay
+                    path: spec.template.spec.initContainers
+        documentSelector:
+            path: kind
+            value: StatefulSet
+        it: renders when overlay is enabled with copy config
+        set:
+            overlay.copy[0].into: /dest
+            overlay.enabled: true
+
+    -   asserts:
+            -   contains:
+                    content:
+                        image: rclone/rclone:1.66
+                        name: liferay-overlay
+                    path: spec.template.spec.initContainers
+        documentSelector:
+            path: kind
+            value: StatefulSet
+        it: uses rclone image by default
+        set:
+            overlay.copy[0].into: /dest
+            overlay.enabled: true
+
+    -   asserts:
+            -   contains:
+                    content:
+                        image: amazon/aws-cli:2.27.63
+                        name: liferay-overlay
+                    path: spec.template.spec.initContainers
+        documentSelector:
+            path: kind
+            value: StatefulSet
+        it: uses aws-cli image when overlay.image is overridden
+        set:
+            overlay.copy[0].into: /dest
+            overlay.enabled: true
+            overlay.image.repository: amazon/aws-cli
+            overlay.image.tag: "2.27.63"
+
+    -   asserts:
+            -   contains:
+                    content:
+                        name: liferay-overlay
+                        volumeMounts:
+                            -   mountPath: /liferay-init-scripts/overlay-sync.sh
+                                name: custom-init-scripts
+                                subPath: overlay-sync.sh
+                            -   mountPath: /temp
+                                name: liferay-persistent-volume
+                    path: spec.template.spec.initContainers
+        documentSelector:
+            path: kind
+            value: StatefulSet
+        it: volumeMount name tracks overlay.initScriptsVolumeName
+        set:
+            overlay.copy[0].into: /dest
+            overlay.enabled: true
+            overlay.initScriptsVolumeName: custom-init-scripts

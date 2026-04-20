@@ -158,11 +158,6 @@ spec:
                 {{- with .statefulset.volumes }}
                 {{- toYaml . | nindent 16 }}
                 {{- end }}
-                {{- if and .statefulset.overlay .statefulset.overlay.enabled }}
-                -   name: {{ .statefulset.overlay.bucketName }}
-                    persistentVolumeClaim:
-                        claimName: {{ .statefulset.overlay.bucketName }}
-                {{- end }}
                 {{- range $k, $v := .statefulset.customVolumes }}
                 {{- toYaml $v | nindent 16 }}
                 {{- end }}
