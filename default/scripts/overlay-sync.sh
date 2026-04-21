@@ -6,7 +6,7 @@ set -o nounset
 function main {
 	if [ "${#}" -ne 3 ]
 	then
-		_log_json "Usage: ${0} <provider-type> <from-path> <into-path>" "ERROR"
+		_log_json "Usage: ${0} <provider-type> <from-path> <into-path>." "ERROR"
 
 		exit 1
 	fi
